@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.urls import path, include
 from mainApp import urls as user_urls
+from django.http import HttpResponse
 
 def hello_world(request):
     return HttpResponse("Hello, World!")
