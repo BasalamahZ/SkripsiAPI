@@ -14,6 +14,9 @@ from rest_framework.decorators import api_view
 from sklearn.preprocessing import LabelEncoder
 from mainApp import mfcc
 
+def hello_world(request):
+    return HttpResponse("Hello, World!")
+
 # This function will return the users by id
 @csrf_exempt
 @api_view(['GET', 'POST'])
