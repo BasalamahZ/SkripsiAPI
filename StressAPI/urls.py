@@ -19,4 +19,5 @@ from mainApp import urls as user_urls
 
 urlpatterns = [
     path('api/', include(user_urls)),
+    path('test/', "hello world")
 ]
