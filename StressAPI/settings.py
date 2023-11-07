@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-es71q1q_s32!etle5@x$-o^zv)b%^si#a_vrsb@9s&32^j!rnp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['103.54.170.9']
 
 
 # Application definition
@@ -117,11 +117,11 @@ WSGI_APPLICATION = 'StressAPI.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'stressAPI',
-        'USER': 'postgres',
-        'PASSWORD': 'root',
+        'NAME': 'stress',
+        'USER': 'zidane',
+        'PASSWORD': 'password_zidane',
         "HOST": "localhost",
-        "PORT": "3306",
+        "PORT": "5432",
     }
 }
 
