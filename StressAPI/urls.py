@@ -19,7 +19,7 @@ from mainApp import urls as user_urls
 from . import views
 
 urlpatterns = [
-    path('api/', include(user_urls))
+    path('api/', include(user_urls)),
     path('hello/', views.hello_world, name='hello_world'),
     #path('test/', "hello world")
 ]
