@@ -11,17 +11,7 @@ jobs:
     steps:
       - name: 🚚 Get latest code
         uses: actions/checkout@v2
-
-      - name: 📁 Send files via Rsync
-        uses: Burnett01/rsync-deployments@5.2.1
-        with:
-          switches: -avzr
-          path: .
-          remote_path: /home/zidaneali/SkripsiAPI
-          remote_host: ${{ secrets.SSH_HOST }}
-          remote_user: ${{ secrets.SSH_USERNAME }}
-          remote_key: ${{ secrets.SSH_KEY }}
-
+        
       - name: 🌟 Run server
         uses: appleboy/ssh-action@master
         with:
@@ -29,6 +19,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            git pull
             cd /home/zidaneali/SkripsiAPI
             pip install -r requirements.txt --no-cache-dir
             pm2 restart BE
