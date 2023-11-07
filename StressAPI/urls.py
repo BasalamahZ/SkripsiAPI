@@ -16,10 +16,12 @@ Including another URLconf
 """
 from django.urls import path, include
 from mainApp import urls as user_urls
-from . import views
+
+def hello_world(request):
+    return HttpResponse("Hello, World!")
 
 urlpatterns = [
     path('api/', include(user_urls)),
-    path('hello/', views.hello_world, name='hello_world'),
+    path('hello/', hello_world, name='hello_world'),
     #path('test/', "hello world")
 ]
