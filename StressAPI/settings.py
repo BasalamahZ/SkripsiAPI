@@ -100,11 +100,11 @@ WSGI_APPLICATION = 'StressAPI.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'stressAPI',
-        'USER': 'postgres',
-        'PASSWORD': 'root',
+        'NAME': 'stress',
+        'USER': 'zidane',
+        'PASSWORD': 'password_zidane',
         "HOST": "localhost",
-        "PORT": "3306",
+        "PORT": "5432",
     }
 }
 
