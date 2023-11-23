@@ -25,7 +25,10 @@ SECRET_KEY = 'django-insecure-es71q1q_s32!etle5@x$-o^zv)b%^si#a_vrsb@9s&32^j!rnp
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['103.54.170.9']
+ALLOWED_HOSTS = [
+    '103.54.170.9',
+    'localhost',
+    ]
 
 
 # Application definition
@@ -54,14 +57,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# CSRF_COOKIE_SECURE = False
-
-# CSRF_COOKIE_HTTPONLY = True
-
-# SESSION_COOKIE_SECURE = None
-
-# SESSION_COOKIE_HTTPONLY = True
-
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOW_HEADERS = [
@@ -71,24 +66,12 @@ CORS_ALLOW_HEADERS = [
     # Add any other headers you need to allow here
 ]
 
-# CORS_ORIGIN_WHITELIST = ["http://localhost:8000", "http://192.168.56.1:8000"]
-
 CORS_ORIGIN_ALLOW_ALL = True
-
-# CSRF_COOKIE_DOMAIN = [
-#     "http://localhost:8000",
-#     # Add other cookie domain here if needed
-# ]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
     # Add other CSRF trusted origins here if needed
 ]
-
-# ALLOWED_HOSTS = [
-#     "*",
-#     # Add other allowed hosts here if needed
-# ]
 
 ROOT_URLCONF = 'StressAPI.urls'
 
@@ -117,11 +100,11 @@ WSGI_APPLICATION = 'StressAPI.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'stress',
-        'USER': 'zidane',
-        'PASSWORD': 'password_zidane',
+        'NAME': 'stressAPI',
+        'USER': 'postgres',
+        'PASSWORD': 'root',
         "HOST": "localhost",
-        "PORT": "5432",
+        "PORT": "3306",
     }
 }
 

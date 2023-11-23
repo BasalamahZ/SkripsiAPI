@@ -1,111 +1,77 @@
 import numpy as np
 import librosa
 
-def noise(data):
-    if data.size == 0:
-        # Handle the case when data is empty
-        return data
-    
-    noise_amp = 0.035*np.random.uniform()*np.amax(data)
-    data = data + noise_amp*np.random.normal(size=data.shape[0])
-    return data
+audio_length=8000 * 1
+dim = (40, 1 + int(np.floor(audio_length/512)), 1)
 
-def stretch(data, rate=0.8):
-    return librosa.effects.time_stretch(data, rate=0.8)
+def prepare_data(fnames):
+    X = np.empty(shape=(len(fnames), dim[0], dim[1], 1))
+    input_length = audio_length
+    for i, fname in enumerate(fnames):
+        data, _ = librosa.core.load(fname, sr=8000, res_type="kaiser_fast")
+        # Random offset / Padding
+        if len(data) > input_length:
+            max_offset = len(data) - input_length
+            offset = np.random.randint(max_offset)
+            data = data[offset:(input_length+offset)]
+        else:
+            if input_length > len(data):
+                max_offset = input_length - len(data)
+                offset = np.random.randint(max_offset)
+            else:
+                offset = 0
+            data = np.pad(data, (offset, input_length - len(data) - offset), "constant")
 
-def shift(data):
-    shift_range = int(np.random.uniform(low=-5, high = 5)*1000)
-    return np.roll(data, shift_range)
+        # data = np.pad(data, (1, 1), "constant")
+        data = librosa.feature.mfcc(y=data, sr=8000, n_mfcc=40)
+        data = np.expand_dims(data, axis=-1)
+        X[i,] = data
+        # X=data
+    return X
 
-def pitch(data, sampling_rate, pitch_factor=0.7):
-    return librosa.effects.pitch_shift(data, sr=sampling_rate, n_steps=pitch_factor)
+dim_spectral_centroid = (1, 1 + int(np.floor(audio_length / 512)), 1)
 
-def extract_features(data, sample_rate):
-    # # ZCR
-    result = np.array([])
-    # zcr = np.mean(librosa.feature.zero_crossing_rate(y=data).T, axis=0)
-    # result=np.hstack((result, zcr)) # stacking horizontally
+def prepare_data2(fnames):
+    X_mfcc = []
+    X_spectral_centroid = []
 
-    # #Chroma_stft
-    # stft = np.abs(librosa.stft(data))
-    # chroma_stft = np.mean(librosa.feature.chroma_stft(S=stft, sr=sample_rate).T, axis=0)
-    # result = np.hstack((result, chroma_stft)) # stacking horizontally
+    input_length = audio_length
 
-    # MFCC
-    mfcc = np.mean(librosa.feature.mfcc(y=data, sr=sample_rate).T, axis=0)
-    result = np.hstack((result, mfcc)) # stacking horizontally
+    for i, fname in enumerate(fnames):
+        data, _ = librosa.core.load(fname, sr=8000, res_type="kaiser_fast")
 
-    # # Root Mean Square Value
-    # rms = np.mean(librosa.feature.rms(y=data).T, axis=0)
-    # result = np.hstack((result, rms)) # stacking horizontally
+        # Random offset / Padding
+        if len(data) > input_length:
+            max_offset = len(data) - input_length
+            offset = np.random.randint(max_offset)
+            data = data[offset:(input_length + offset)]
+        else:
+            if input_length > len(data):
+                max_offset = input_length - len(data)
+                offset = np.random.randint(max_offset)
+            else:
+                offset = 0
+            data = np.pad(data, (offset, input_length - len(data) - offset), "constant")
 
-    # # MelSpectogram
-    # mel = np.mean(librosa.feature.melspectrogram(y=data, sr=sample_rate).T, axis=0)
-    # result = np.hstack((result, mel)) # stacking horizontally
-    
-    #spectral centroid
-    # spec_cent=np.mean(librosa.feature.spectral_centroid(y=data, sr=sample_rate).T, axis=0)
-    # result = np.hstack((result, spec_cent)) # stacking horizontally
-    
-    #spectral contrast
-    S = np.abs(librosa.stft(data))
-    contrast = np.mean(librosa.feature.spectral_contrast(S=S, sr=sample_rate).T, axis=0)
-    result = np.hstack((result, contrast)) # stacking horizontally
-    
-    # #spectral flux
-    # onset_env =np.mean( librosa.onset.onset_strength(sr=sample_rate, S=librosa.amplitude_to_db(data, ref=np.max)))
-    # result=np.hstack((result,onset_env))
-    
-    # #mler
-    # Mler=mler(rms)
-    # result=np.hstack((result,Mler))
-    
-    # #chroma_sens
-    # chroma_cens = np.mean(librosa.feature.chroma_cens(y=data, sr=sample_rate))
-    # result=np.hstack((result,chroma_cens))
-    
-    
-    #entropy
-    
-   # ee=np.round(ent.spectral_entropy(data, sf=100, method='fft'), 2)
-    #result=np.np.hstack((result,ee))
-    #rmse
-    #Rmse=rmse(data)
-   # result=np.hstack((result,rmse))
-    #spectral roll off
-    # spec_rolloff = np.mean(librosa.feature.spectral_rolloff(x, sr=sample_rate)[0])
-    # result=np.hstack((result,spec_rolloff))
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    return result
+        # Extract MFCCs
+        mfccs = librosa.feature.mfcc(y=data, sr=8000, n_mfcc=60)
+        mfccs = np.expand_dims(mfccs, axis=-1)
+        X_mfcc.append(mfccs)
 
-def get_features(path):
-    # duration and offset are used to take care of the no audio in start and the ending of each audio files as seen above.
-    data, sample_rate = librosa.load(path, duration=2.5, offset=0.6)
-    
-    # without augmentation
-    res1 = extract_features(data,sample_rate)
-    result = np.array(res1)
-    
-    # data with noise
-    noise_data = noise(data)
-    res2 = extract_features(noise_data,sample_rate)
-    result = np.vstack((result, res2)) # stacking vertically
-    
-    # data with stretching and pitching
-    new_data = stretch(data)
-    data_stretch_pitch = pitch(new_data, sample_rate)
-    res3 = extract_features(data_stretch_pitch, sample_rate)
-    # result = np.array(res3)
-    result = np.vstack((result, res3)) # stacking vertically
-    
-    return result
+        # Extract Spectral Centroid
+        spectral_centroid = librosa.feature.spectral_centroid(y=data, sr=8000)
+        spectral_centroid = np.expand_dims(spectral_centroid, axis=-1)
+        X_spectral_centroid.append(spectral_centroid)
+
+    # Ensure the same time and frequency dimensions for both features
+    max_time_dim = max(max(x.shape[1] for x in X_mfcc), max(x.shape[1] for x in X_spectral_centroid))
+    max_freq_dim = max(X_mfcc[0].shape[0], X_spectral_centroid[0].shape[0])
+
+    # Pad and reshape the features individually
+    X_mfcc_padded = np.array([np.pad(x, ((0, max_freq_dim - x.shape[0]), (0, 0), (0, max_time_dim - x.shape[1])), mode='constant') for x in X_mfcc])
+    X_spectral_centroid_padded = np.array([np.pad(x, ((0, max_freq_dim - x.shape[0]), (0, 0), (0, max_time_dim - x.shape[1])), mode='constant') for x in X_spectral_centroid])
+
+    # Combine MFCCs and Spectral Centroid
+    X_combined = np.concatenate([X_mfcc_padded, X_spectral_centroid_padded], axis=-1)
+
+    return X_combined

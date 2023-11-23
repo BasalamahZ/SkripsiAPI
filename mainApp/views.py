@@ -3,7 +3,9 @@ import requests
 import cloudinary
 import numpy as np
 import io
+import librosa
 import tensorflow as tf
+import soundfile as sf
 from django.http.response import JsonResponse
 from rest_framework.parsers import JSONParser 
 from rest_framework import status
@@ -65,32 +67,46 @@ def data_list(request):
  
     elif request.method == 'POST':
         data = JSONParser().parse(request)
-        tf.keras.backend.clear_session()
-        # load model
-        if data['algorithm'] == 'galih':
-            model = tf.keras.models.load_model("./model/model_4_01.h5", compile=False)
-        elif data['algorithm'] == 'zidane':
-            model = tf.keras.models.load_model("./model/model_1.h5", compile=False)
-        else:
-            return JsonResponse({'message':'algorithm not found'}, status=status.HTTP_400_BAD_REQUEST)
         data['date_created'] = timezone.now()
         sound_uri = data["sound_uri"]
         response = requests.get(sound_uri)
         if response.status_code != 200:
             return JsonResponse({'message':'error get sound uri'}, status=status.HTTP_400_BAD_REQUEST)
         
-        mfcc_features = mfcc.get_features(io.BytesIO(response.content))
-        
-        # make a prediction
-        prediction = model.predict(mfcc_features)
+        y, sr = librosa.load(io.BytesIO(response.content), sr=24000)
 
+        # Resample to 8000 Hz
+        y_resampled = librosa.resample(y, orig_sr=sr, target_sr=8000)
+        output_path = "./file_resampled.wav"
+        sf.write(output_path, y_resampled, 8000)
+        
+        tf.keras.backend.clear_session()
+        # load model
+        if data['algorithm'] == 'galih':
+            model = tf.keras.models.load_model("./model/model_spec_galih.h5", compile=False)
+            predict_data = mfcc.prepare_data2([output_path])
+        elif data['algorithm'] == 'zidane':
+            model = tf.keras.models.load_model("./model/model_mfcc_galih.h5", compile=False)
+            predict_data = mfcc.prepare_data([output_path])
+        elif data['algorithm'] == 'izza':
+            model = tf.keras.models.load_model("./model/model_mfcc_galih.h5", compile=False)
+            predict_data = mfcc.prepare_data([output_path])
+        elif data['algorithm'] == 'delfi':
+            model = tf.keras.models.load_model("./model/model_mfcc_galih.h5", compile=False)
+            predict_data = mfcc.prepare_data([output_path])
+        else:
+            return JsonResponse({'message':'algorithm not found'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Predict and Data Classes
+        predict_data = model.predict(predict_data, use_multiprocessing=True, workers=6, verbose=1)
+        
         # Fit the encoder on your class labels
         class_labels = ["HighStress", "LowStress"]
         encoder = LabelEncoder()
         encoder.fit(class_labels)
-        y_pred = encoder.inverse_transform(np.argmax(prediction, axis=1))
+        predicted_labels = encoder.inverse_transform([np.argmax(predict_data)])
         
-        data['label'] = y_pred[0]
+        data['label'] = predicted_labels[0]
         data_serializer = DataSerializer(data=data)
         if data_serializer.is_valid():
             data_serializer.save()
