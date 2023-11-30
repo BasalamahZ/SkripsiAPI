@@ -96,7 +96,6 @@ def data_list(request):
             predict_data = mfcc.getMFCC(y, sr)
             predict_data = np.array(predict_data)
             predict_data = predict_data.reshape(1, 84, 13, 1)
-
         else:
             return JsonResponse({'message':'algorithm not found'}, status=status.HTTP_400_BAD_REQUEST)
 
