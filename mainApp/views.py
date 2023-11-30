@@ -93,7 +93,10 @@ def data_list(request):
             predict_data = mfcc.prepare_data3([output_path])
         elif data['algorithm'] == 'izza':
             model = tf.keras.models.load_model("./model/model_stft_izza.h5", compile=False)
-            predict_data = mfcc.prepare_data([output_path])
+            predict_data = mfcc.getMFCC(y, sr)
+            predict_data = np.array(predict_data)
+            predict_data = predict_data.reshape(1, 84, 13, 1)
+
         else:
             return JsonResponse({'message':'algorithm not found'}, status=status.HTTP_400_BAD_REQUEST)
 
