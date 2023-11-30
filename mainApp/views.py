@@ -85,14 +85,14 @@ def data_list(request):
         if data['algorithm'] == 'galih':
             model = tf.keras.models.load_model("./model/model_spec_galih.h5", compile=False)
             predict_data = mfcc.prepare_data2([output_path])
+        elif data['algorithm'] == 'delfi':
+            model = tf.keras.models.load_model("./model/model_noise_delfi.h5", compile=False)
+            predict_data = mfcc.prepare_data([output_path])
         elif data['algorithm'] == 'zidane':
             model = tf.keras.models.load_model("./model/model_wavelet_zidane.h5", compile=False)
             predict_data = mfcc.prepare_data3([output_path])
         elif data['algorithm'] == 'izza':
-            model = tf.keras.models.load_model("./model/model_mfcc_galih.h5", compile=False)
-            predict_data = mfcc.prepare_data([output_path])
-        elif data['algorithm'] == 'delfi':
-            model = tf.keras.models.load_model("./model/model_noise_delfi.h5", compile=False)
+            model = tf.keras.models.load_model("./model/model_stft_izza.h5", compile=False)
             predict_data = mfcc.prepare_data([output_path])
         else:
             return JsonResponse({'message':'algorithm not found'}, status=status.HTTP_400_BAD_REQUEST)
