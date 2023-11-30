@@ -82,12 +82,12 @@ def data_list(request):
         
         tf.keras.backend.clear_session()
         # load model
-        if data['algorithm'] == 'galih':
-            model = tf.keras.models.load_model("./model/model_spec_galih.h5", compile=False)
-            predict_data = mfcc.prepare_data2([output_path])
-        elif data['algorithm'] == 'delfi':
+        if data['algorithm'] == 'delfi':
             model = tf.keras.models.load_model("./model/model_noise_delfi.h5", compile=False)
             predict_data = mfcc.prepare_data([output_path])
+        elif data['algorithm'] == 'galih':
+            model = tf.keras.models.load_model("./model/model_spec_galih.h5", compile=False)
+            predict_data = mfcc.prepare_data2([output_path])
         elif data['algorithm'] == 'zidane':
             model = tf.keras.models.load_model("./model/model_wavelet_zidane.h5", compile=False)
             predict_data = mfcc.prepare_data3([output_path])
