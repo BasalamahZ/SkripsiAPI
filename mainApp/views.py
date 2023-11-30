@@ -92,7 +92,7 @@ def data_list(request):
             model = tf.keras.models.load_model("./model/model_mfcc_galih.h5", compile=False)
             predict_data = mfcc.prepare_data([output_path])
         elif data['algorithm'] == 'delfi':
-            model = tf.keras.models.load_model("./model/model_mfcc_galih.h5", compile=False)
+            model = tf.keras.models.load_model("./model/model_noise_delfi.h5", compile=False)
             predict_data = mfcc.prepare_data([output_path])
         else:
             return JsonResponse({'message':'algorithm not found'}, status=status.HTTP_400_BAD_REQUEST)
