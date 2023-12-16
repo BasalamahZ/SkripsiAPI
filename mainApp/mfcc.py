@@ -32,8 +32,8 @@ def prepare_data(fnames):
 
 
 def prepare_data2(fnames):
-    audio_length=8000 * 1
-    dim = (60, 1 + int(np.floor(audio_length/512)), 1)
+    audio_length = 8000 * 1
+    dim_mfcc = (60, 1 + int(np.floor(audio_length / 512)), 1)
     dim_spectral_centroid = (1, 1 + int(np.floor(audio_length / 512)), 1)
     
     X_mfcc = []
@@ -63,7 +63,7 @@ def prepare_data2(fnames):
         X_mfcc.append(mfccs)
 
         # Extract Spectral Centroid
-        spectral_centroid = librosa.feature.spectral_centroid(y=data, sr=8000)
+        spectral_centroid = librosa.feature.spectral_contrast(y=data, sr=8000, fmin=20.0, n_bands=6)
         spectral_centroid = np.expand_dims(spectral_centroid, axis=-1)
         X_spectral_centroid.append(spectral_centroid)
 
@@ -106,7 +106,7 @@ def auto_denoise_signal(x, wavelet='db4', level=1):
 
 def prepare_data3(fnames):
     audio_length=8000 * 1
-    dim_wavelet = (50, 1 + int(np.floor(audio_length/512)), 1)
+    dim_wavelet = (60, 1 + int(np.floor(audio_length/512)), 1)
     
     X = np.empty(shape=(len(fnames), dim_wavelet[0], dim_wavelet[1], 1))
     input_length = audio_length
@@ -126,7 +126,7 @@ def prepare_data3(fnames):
             data = np.pad(data, (offset, input_length - len(data) - offset), "constant")
 
         data = denoise_signal(x=data)
-        data = librosa.feature.mfcc(y=data, sr=8000, n_mfcc=50)
+        data = librosa.feature.mfcc(y=data, sr=8000, n_mfcc=60)
         data = np.expand_dims(data, axis=-1)
         X[i,] = data
         # X=data
