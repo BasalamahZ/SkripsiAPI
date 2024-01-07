@@ -63,7 +63,7 @@ def prepare_data2(fnames):
         X_mfcc.append(mfccs)
 
         # Extract Spectral Centroid
-        spectral_centroid = librosa.feature.spectral_contrast(y=data, sr=8000, fmin=20.0, n_bands=6, win_length=100)
+        spectral_centroid = librosa.feature.spectral_contrast(y=data, sr=8000, fmin=20.0, n_bands=6)
         spectral_centroid = np.expand_dims(spectral_centroid, axis=-1)
         X_spectral_centroid.append(spectral_centroid)
 
